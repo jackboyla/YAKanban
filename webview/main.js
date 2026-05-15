@@ -84,6 +84,28 @@ function renderRepoSection(repo) {
 }
 
 function renderBoard(board, folderUri, repoName) {
+  const container = el("div", "board-container");
+
+  // Agent hint
+  const hint = el("div", "agent-hint");
+  const hintText = `This project uses a file-based Kanban board. Read .yakanban/board.yml for columns and .yakanban/tickets/*.md for tickets (YAML frontmatter: title, column, order, created, modified, tags; body is the description).`;
+  const hintLabel = el("span", "agent-hint-text");
+  hintLabel.textContent = hintText;
+  hint.appendChild(hintLabel);
+
+  const copyBtn = el("button", "agent-hint-copy");
+  copyBtn.textContent = "Copy";
+  copyBtn.title = "Copy to clipboard for your CLAUDE.md / agents.md";
+  copyBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(hintText).then(() => {
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => { copyBtn.textContent = "Copy"; }, 1500);
+    });
+  });
+  hint.appendChild(copyBtn);
+  container.appendChild(hint);
+
   const wrapper = el("div", "board");
 
   for (const col of board.columns) {
@@ -101,7 +123,8 @@ function renderBoard(board, folderUri, repoName) {
   });
   wrapper.appendChild(addCol);
 
-  return wrapper;
+  container.appendChild(wrapper);
+  return container;
 }
 
 function renderColumn(col, tickets, folderUri, allColumns) {

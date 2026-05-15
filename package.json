@@ -16,6 +16,29 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "yakanban",
+          "title": "YAKanban",
+          "icon": "media/kanban-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "yakanban": [
+        {
+          "id": "yakanban.boardView",
+          "name": "Board"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "yakanban.boardView",
+        "contents": "Your Kanban board opens in the editor panel.\nClick this icon again to reopen it."
+      }
+    ],
     "commands": [
       {
         "command": "yakanban.openBoard",

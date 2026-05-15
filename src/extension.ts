@@ -9,6 +9,19 @@ export function activate(context: vscode.ExtensionContext): void {
   panelManager = new KanbanPanelManager(context.extensionUri);
   context.subscriptions.push(panelManager);
 
+  const treeView = vscode.window.createTreeView("yakanban.boardView", {
+    treeDataProvider: {
+      getTreeItem: () => new vscode.TreeItem(""),
+      getChildren: () => [],
+    },
+  });
+  treeView.onDidChangeVisibility((e) => {
+    if (e.visible) {
+      panelManager.openBoard();
+    }
+  });
+  context.subscriptions.push(treeView);
+
   context.subscriptions.push(
     vscode.commands.registerCommand("yakanban.openBoard", () =>
       panelManager.openBoard()

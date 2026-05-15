@@ -81,6 +81,43 @@ body {
   margin-top: 12px;
 }
 
+/* Agent hint */
+.agent-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  background: var(--vscode-textBlockQuote-background, rgba(128, 128, 128, 0.1));
+  border: 1px solid var(--vscode-panel-border, var(--vscode-widget-border, transparent));
+  border-radius: 6px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.agent-hint-text {
+  flex: 1;
+  line-height: 1.4;
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 10.5px;
+}
+
+.agent-hint-copy {
+  flex-shrink: 0;
+  background: var(--vscode-button-secondaryBackground, rgba(128, 128, 128, 0.2));
+  color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
+  border: none;
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: var(--vscode-font-family);
+}
+
+.agent-hint-copy:hover {
+  background: var(--vscode-button-secondaryHoverBackground, rgba(128, 128, 128, 0.3));
+}
+
 /* Board */
 .board {
   display: flex;

@@ -36,6 +36,12 @@ export class KanbanPanelManager implements vscode.Disposable {
   }
 
   async openBoard(): Promise<void> {
+    // Auto-initialize for single-folder workspaces
+    const folders = vscode.workspace.workspaceFolders ?? [];
+    if (folders.length === 1 && !(await boardExists(folders[0].uri))) {
+      await initBoard(folders[0].uri);
+    }
+
     if (this.panel) {
       this.panel.reveal();
       await this.refresh();
