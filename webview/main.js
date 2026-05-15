@@ -13,6 +13,11 @@ let dragSlug = null;
 /** @type {string|null} */
 let dragFolder = null;
 
+/** @type {string|null} */
+let dragColumnId = null;
+/** @type {string|null} */
+let dragColumnFolder = null;
+
 // Restore state
 const saved = vscode.getState();
 if (saved?.collapsed) collapsed = saved.collapsed;
@@ -132,8 +137,24 @@ function renderColumn(col, tickets, folderUri, allColumns) {
   column.dataset.columnId = col.id;
   column.dataset.folder = folderUri;
 
-  // Header
+  // Header (draggable for column reordering)
   const header = el("div", "column-header");
+  header.draggable = true;
+
+  header.addEventListener("dragstart", (e) => {
+    dragColumnId = col.id;
+    dragColumnFolder = folderUri;
+    column.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/x-column", col.id);
+  });
+
+  header.addEventListener("dragend", () => {
+    column.classList.remove("dragging");
+    dragColumnId = null;
+    dragColumnFolder = null;
+    document.querySelectorAll(".column-drag-over").forEach((el) => el.classList.remove("column-drag-over"));
+  });
 
   const title = el("span", "column-title");
   title.textContent = col.name;
@@ -159,6 +180,40 @@ function renderColumn(col, tickets, folderUri, allColumns) {
   header.appendChild(actions);
   column.appendChild(header);
 
+  // Column reorder drop zone
+  column.addEventListener("dragover", (e) => {
+    if (!dragColumnId || dragColumnId === col.id) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    column.classList.add("column-drag-over");
+  });
+
+  column.addEventListener("dragleave", (e) => {
+    if (!column.contains(e.relatedTarget)) {
+      column.classList.remove("column-drag-over");
+    }
+  });
+
+  column.addEventListener("drop", (e) => {
+    if (!dragColumnId || !dragColumnFolder) return;
+    e.preventDefault();
+    e.stopPropagation();
+    column.classList.remove("column-drag-over");
+
+    const allCols = [...document.querySelectorAll(".column")];
+    const targetIndex = allCols.indexOf(column);
+
+    vscode.postMessage({
+      type: "reorderColumns",
+      folder: dragColumnFolder,
+      columnId: dragColumnId,
+      newIndex: targetIndex,
+    });
+
+    dragColumnId = null;
+    dragColumnFolder = null;
+  });
+
   // Cards
   const cardsContainer = el("div", "column-cards");
   cardsContainer.dataset.columnId = col.id;
@@ -173,8 +228,9 @@ function renderColumn(col, tickets, folderUri, allColumns) {
     cardsContainer.appendChild(renderCard(ticket, folderUri, allColumns));
   }
 
-  // Drop zone events
+  // Card drop zone events (skip when dragging a column)
   cardsContainer.addEventListener("dragover", (e) => {
+    if (dragColumnId) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
     column.classList.add("drag-over");
@@ -187,6 +243,7 @@ function renderColumn(col, tickets, folderUri, allColumns) {
   });
 
   cardsContainer.addEventListener("drop", (e) => {
+    if (dragColumnId) return;
     e.preventDefault();
     column.classList.remove("drag-over");
     if (!dragSlug || !dragFolder) return;
@@ -421,22 +478,64 @@ function promptAddTicket(folderUri, columnId) {
 }
 
 function promptAddColumn(folderUri) {
-  const name = prompt("Column name:");
-  if (name?.trim()) {
-    vscode.postMessage({ type: "addColumn", folder: folderUri, name: name.trim() });
-  }
+  const addCol = document.querySelector(".add-column");
+  if (!addCol) return;
+
+  // Avoid duplicate inputs
+  if (addCol.querySelector(".inline-input")) return;
+
+  const input = document.createElement("input");
+  input.className = "inline-input";
+  input.placeholder = "Column name…";
+  input.addEventListener("click", (e) => e.stopPropagation());
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && input.value.trim()) {
+      vscode.postMessage({ type: "addColumn", folder: folderUri, name: input.value.trim() });
+      input.remove();
+    }
+    if (e.key === "Escape") {
+      input.remove();
+    }
+  });
+  input.addEventListener("blur", () => {
+    setTimeout(() => input.remove(), 150);
+  });
+
+  addCol.textContent = "";
+  addCol.appendChild(input);
+  input.focus();
 }
 
 function promptRenameColumn(folderUri, col) {
-  const name = prompt("New column name:", col.name);
-  if (name?.trim() && name.trim() !== col.name) {
-    vscode.postMessage({
-      type: "renameColumn",
-      folder: folderUri,
-      columnId: col.id,
-      newName: name.trim(),
-    });
-  }
+  const header = document.querySelector(`.column[data-column-id="${col.id}"] .column-title`);
+  if (!header) return;
+
+  const input = document.createElement("input");
+  input.className = "inline-input";
+  input.value = col.name;
+  input.addEventListener("click", (e) => e.stopPropagation());
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && input.value.trim() && input.value.trim() !== col.name) {
+      vscode.postMessage({
+        type: "renameColumn",
+        folder: folderUri,
+        columnId: col.id,
+        newName: input.value.trim(),
+      });
+    }
+    if (e.key === "Enter" || e.key === "Escape") {
+      input.replaceWith(header);
+    }
+  });
+  input.addEventListener("blur", () => {
+    setTimeout(() => {
+      if (input.parentNode) input.replaceWith(header);
+    }, 150);
+  });
+
+  header.replaceWith(input);
+  input.focus();
+  input.select();
 }
 
 // ---- Helpers ----

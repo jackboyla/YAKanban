@@ -146,6 +146,15 @@ body {
   background: var(--vscode-list-hoverBackground);
 }
 
+.column.dragging {
+  opacity: 0.4;
+}
+
+.column.column-drag-over {
+  border-color: var(--vscode-focusBorder);
+  box-shadow: -3px 0 0 0 var(--vscode-focusBorder);
+}
+
 .column-header {
   display: flex;
   align-items: center;
@@ -153,6 +162,7 @@ body {
   border-bottom: 1px solid var(--vscode-panel-border, var(--vscode-widget-border, transparent));
   gap: 8px;
   flex-shrink: 0;
+  cursor: grab;
 }
 
 .column-title {

@@ -203,6 +203,20 @@ export class KanbanPanelManager implements vscode.Disposable {
         break;
       }
 
+      case "reorderColumns": {
+        if (!folderUri) return;
+        const columnId = msg.columnId as string;
+        const newIndex = msg.newIndex as number;
+        const columns = await readColumns(folderUri);
+        const oldIndex = columns.findIndex((c) => c.id === columnId);
+        if (oldIndex === -1 || oldIndex === newIndex) break;
+        const [moved] = columns.splice(oldIndex, 1);
+        columns.splice(newIndex, 0, moved);
+        await writeColumns(folderUri, columns);
+        await this.refresh();
+        break;
+      }
+
       case "renameColumn": {
         if (!folderUri) return;
         const columnId = msg.columnId as string;
