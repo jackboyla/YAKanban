@@ -4,9 +4,14 @@ Lightweight file-based Kanban board for VS Code. Tickets are stored as markdown 
 
 ## Quick Start
 
-1. Install the extension (F5 from this repo, or install the `.vsix`)
+Install the latest VSCode marketplace extension at https://marketplace.visualstudio.com/items?itemName=jackboylan.yakanban
+
+or go from source:
+
+1. Open this repo in VSCode and install the extension (F5 from this repo)
 2. Open a workspace in VS Code
-3. Click the **YAKanban icon** in the activity bar — it auto-initializes if no board exists
+
+Click the **YAKanban icon** in the activity bar — it auto-initializes if no board exists
 
 A `.yakanban/` directory is created in your workspace with default columns (To Do, In Progress, Done) and a `tickets/` folder.
 
