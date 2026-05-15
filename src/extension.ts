@@ -15,11 +15,17 @@ export function activate(context: vscode.ExtensionContext): void {
       getChildren: () => [],
     },
   });
+  const openVisibleBoard = () => {
+    void panelManager.openBoard();
+  };
   treeView.onDidChangeVisibility((e) => {
     if (e.visible) {
-      panelManager.openBoard();
+      openVisibleBoard();
     }
   });
+  if (treeView.visible) {
+    openVisibleBoard();
+  }
   context.subscriptions.push(treeView);
 
   context.subscriptions.push(

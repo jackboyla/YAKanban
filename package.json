@@ -2,9 +2,25 @@
   "name": "yakanban",
   "displayName": "YAKanban",
   "description": "Lightweight file-based Kanban board. Tickets stored as markdown files for easy human and AI access.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "jackboylan",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jackboyla/YAKanban.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jackboyla/YAKanban/issues"
+  },
+  "homepage": "https://github.com/jackboyla/YAKanban#readme",
+  "keywords": [
+    "kanban",
+    "markdown",
+    "tasks",
+    "tickets",
+    "ai-agents",
+    "project-management"
+  ],
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -12,7 +28,11 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "onView:yakanban.boardView",
+    "onCommand:yakanban.openBoard",
+    "onCommand:yakanban.init",
+    "onCommand:yakanban.addTicket",
+    "onCommand:yakanban.addColumn"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -65,12 +85,15 @@
   "scripts": {
     "build": "node esbuild.mjs",
     "watch": "node esbuild.mjs --watch",
-    "package": "vsce package"
+    "vscode:prepublish": "npm run build",
+    "package": "vsce package",
+    "publish": "vsce publish"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
     "@types/vscode": "^1.85.0",
-    "esbuild": "^0.24.0"
+    "@vscode/vsce": "^3.6.0",
+    "esbuild": "^0.28.0"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",

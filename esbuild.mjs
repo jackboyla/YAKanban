@@ -10,7 +10,7 @@ const ctx = await esbuild.context({
   format: "cjs",
   platform: "node",
   target: "node18",
-  sourcemap: true,
+  sourcemap: watch,
   minify: !watch,
 });
 

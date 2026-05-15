@@ -123,6 +123,9 @@ media/
 ### Packaging
 
 ```bash
-npm install -g @vscode/vsce
-vsce package
+npm ci
+npm run build
+npm run package
 ```
+
+See [RELEASE.md](RELEASE.md) for the full release and Marketplace publishing process.
