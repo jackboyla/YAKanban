@@ -1,0 +1,56 @@
+{
+  "name": "yakanban",
+  "displayName": "YAKanban",
+  "description": "Lightweight file-based Kanban board. Tickets stored as markdown files for easy human and AI access.",
+  "version": "0.1.0",
+  "publisher": "jackboylan",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "yakanban.openBoard",
+        "title": "Open Kanban Board",
+        "category": "YAKanban"
+      },
+      {
+        "command": "yakanban.init",
+        "title": "Initialize Board",
+        "category": "YAKanban"
+      },
+      {
+        "command": "yakanban.addTicket",
+        "title": "Add Ticket",
+        "category": "YAKanban"
+      },
+      {
+        "command": "yakanban.addColumn",
+        "title": "Add Column",
+        "category": "YAKanban"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.24.0"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.0"
+  }
+}
