@@ -5,6 +5,7 @@ import {
   writeTicket,
   deleteTicket,
   moveTicket,
+  addComment,
   boardExists,
   initBoard,
   ticketFileUri,
@@ -150,6 +151,7 @@ export class KanbanPanelManager implements vscode.Disposable {
           created: now,
           modified: now,
           tags: [],
+          comments: [],
           body: "",
         });
         await this.refresh();
@@ -239,6 +241,7 @@ export class KanbanPanelManager implements vscode.Disposable {
         const column = msg.column as string;
         const order = msg.order as number;
         const body = msg.body as string;
+        const comments = (msg.comments as Array<{ author: string; date: string; text: string }>) || [];
         await writeTicket(folderUri, {
           slug,
           title,
@@ -247,8 +250,19 @@ export class KanbanPanelManager implements vscode.Disposable {
           created: (msg.created as string) || toDateString(),
           modified: toDateString(),
           tags: tags || [],
+          comments,
           body: body || "",
         });
+        await this.refresh();
+        break;
+      }
+
+      case "addComment": {
+        if (!folderUri) return;
+        const slug = msg.slug as string;
+        const author = msg.author as string;
+        const text = msg.text as string;
+        await addComment(folderUri, slug, author, text);
         await this.refresh();
         break;
       }

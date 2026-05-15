@@ -269,6 +269,11 @@ body {
   display: flex;
 }
 
+.card-comment-count {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
 /* Drop indicator */
 .drop-indicator {
   height: 3px;
@@ -433,6 +438,7 @@ button.primary:hover {
   max-height: 80vh;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
@@ -567,4 +573,95 @@ button.primary:hover {
 
 .modal-btn.secondary:hover {
   background: var(--vscode-button-secondaryHoverBackground, rgba(128, 128, 128, 0.3));
+}
+
+/* Modal comments */
+.modal-comments {
+  margin: 0 16px;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid var(--vscode-panel-border, var(--vscode-widget-border, transparent));
+  border-radius: 4px;
+}
+
+.modal-comments-empty {
+  padding: 12px;
+  text-align: center;
+  opacity: 0.5;
+  font-size: 12px;
+}
+
+.modal-comment {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--vscode-panel-border, var(--vscode-widget-border, transparent));
+}
+
+.modal-comment:last-child {
+  border-bottom: none;
+}
+
+.modal-comment-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.modal-comment-author {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.modal-comment-date {
+  font-size: 10px;
+  opacity: 0.5;
+}
+
+.modal-comment-text {
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.modal-comment-form {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  align-items: flex-end;
+}
+
+.modal-comment-author-input {
+  width: 100px;
+  flex-shrink: 0;
+  background: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border, var(--vscode-focusBorder));
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: var(--vscode-font-family);
+  outline: none;
+}
+
+.modal-comment-author-input:focus {
+  border-color: var(--vscode-focusBorder);
+}
+
+.modal-comment-text-input {
+  flex: 1;
+  background: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border, var(--vscode-focusBorder));
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: var(--vscode-font-family);
+  resize: vertical;
+  outline: none;
+  min-height: 36px;
+}
+
+.modal-comment-text-input:focus {
+  border-color: var(--vscode-focusBorder);
 }

@@ -8,6 +8,12 @@ export interface Column {
   name: string;
 }
 
+export interface Comment {
+  author: string;
+  date: string;
+  text: string;
+}
+
 export interface Ticket {
   slug: string;
   title: string;
@@ -16,6 +22,7 @@ export interface Ticket {
   created: string;
   modified: string;
   tags: string[];
+  comments: Comment[];
   body: string;
 }
 
@@ -102,6 +109,7 @@ export async function readTickets(folder: vscode.Uri): Promise<Ticket[]> {
         created: data.created ?? "",
         modified: data.modified ?? data.created ?? "",
         tags: Array.isArray(data.tags) ? data.tags : [],
+        comments: Array.isArray(data.comments) ? data.comments : [],
         body: content.trim(),
       });
     }
@@ -139,6 +147,9 @@ export async function writeTicket(
   if (ticket.tags.length > 0) {
     frontmatter.tags = ticket.tags;
   }
+  if (ticket.comments.length > 0) {
+    frontmatter.comments = ticket.comments;
+  }
 
   const content = matter.stringify(ticket.body || "", frontmatter);
   await vscode.workspace.fs.writeFile(uri, Buffer.from(content, "utf-8"));
@@ -166,6 +177,26 @@ export async function moveTicket(
   const { data, content } = matter(raw);
   data.column = newColumn;
   data.order = newOrder;
+  data.modified = toDateString();
+  const updated = matter.stringify(content, data);
+  await vscode.workspace.fs.writeFile(uri, Buffer.from(updated, "utf-8"));
+}
+
+export async function addComment(
+  folder: vscode.Uri,
+  slug: string,
+  author: string,
+  text: string
+): Promise<void> {
+  const uri = vscode.Uri.joinPath(ticketsUri(folder), `${slug}.md`);
+  const raw = Buffer.from(await vscode.workspace.fs.readFile(uri)).toString(
+    "utf-8"
+  );
+  const { data, content } = matter(raw);
+  if (!Array.isArray(data.comments)) {
+    data.comments = [];
+  }
+  data.comments.push({ author, date: toDateString(), text });
   data.modified = toDateString();
   const updated = matter.stringify(content, data);
   await vscode.workspace.fs.writeFile(uri, Buffer.from(updated, "utf-8"));

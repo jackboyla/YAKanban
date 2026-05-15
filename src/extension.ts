@@ -81,6 +81,7 @@ export function activate(context: vscode.ExtensionContext): void {
         created: now,
         modified: now,
         tags: [],
+        comments: [],
         body: "",
       });
 

@@ -93,7 +93,7 @@ function renderBoard(board, folderUri, repoName) {
 
   // Agent hint
   const hint = el("div", "agent-hint");
-  const hintText = `This project uses a file-based Kanban board. Read .yakanban/board.yml for columns and .yakanban/tickets/*.md for tickets (YAML frontmatter: title, column, order, created, modified, tags; body is the description).`;
+  const hintText = `This project uses a file-based Kanban board. Read .yakanban/board.yml for columns and .yakanban/tickets/*.md for tickets (YAML frontmatter: title, column, order, created, modified, tags, comments[{author,date,text}]; body is the description).`;
   const hintLabel = el("span", "agent-hint-text");
   hintLabel.textContent = hintText;
   hint.appendChild(hintLabel);
@@ -327,6 +327,11 @@ function renderCard(ticket, folderUri, allColumns) {
     const tagEl = el("span", "card-tag");
     tagEl.textContent = tag;
     meta.appendChild(tagEl);
+  }
+  if (ticket.comments && ticket.comments.length > 0) {
+    const commentBadge = el("span", "card-comment-count");
+    commentBadge.textContent = `💬 ${ticket.comments.length}`;
+    meta.appendChild(commentBadge);
   }
   if (ticket.created) {
     const date = el("span", "card-date");
@@ -642,6 +647,70 @@ function openTicketModal(ticket, folderUri, allColumns) {
   tagsInput.placeholder = "e.g. bug, urgent";
   modal.appendChild(tagsInput);
 
+  // Comments
+  const commentsLabel = el("label", "modal-label");
+  commentsLabel.textContent = `Comments${ticket.comments?.length ? ` (${ticket.comments.length})` : ""}`;
+  modal.appendChild(commentsLabel);
+
+  const commentsSection = el("div", "modal-comments");
+
+  if (ticket.comments && ticket.comments.length > 0) {
+    for (const comment of ticket.comments) {
+      const commentEl = el("div", "modal-comment");
+      const commentHeader = el("div", "modal-comment-header");
+      const authorEl = el("span", "modal-comment-author");
+      authorEl.textContent = comment.author || "Unknown";
+      commentHeader.appendChild(authorEl);
+      const dateEl = el("span", "modal-comment-date");
+      dateEl.textContent = formatFullDate(comment.date);
+      dateEl.title = comment.date || "";
+      commentHeader.appendChild(dateEl);
+      commentEl.appendChild(commentHeader);
+      const textEl = el("div", "modal-comment-text");
+      textEl.textContent = comment.text;
+      commentEl.appendChild(textEl);
+      commentsSection.appendChild(commentEl);
+    }
+  } else {
+    const emptyEl = el("div", "modal-comments-empty");
+    emptyEl.textContent = "No comments yet";
+    commentsSection.appendChild(emptyEl);
+  }
+
+  modal.appendChild(commentsSection);
+
+  // Add comment form
+  const commentForm = el("div", "modal-comment-form");
+  const commentAuthor = document.createElement("input");
+  commentAuthor.className = "modal-comment-author-input";
+  commentAuthor.value = "User";
+  commentAuthor.placeholder = "Your name";
+  commentForm.appendChild(commentAuthor);
+
+  const commentText = document.createElement("textarea");
+  commentText.className = "modal-comment-text-input";
+  commentText.placeholder = "Write a comment…";
+  commentText.rows = 2;
+  commentForm.appendChild(commentText);
+
+  const addCommentBtn = el("button", "modal-btn primary");
+  addCommentBtn.textContent = "Add Comment";
+  addCommentBtn.addEventListener("click", () => {
+    const author = commentAuthor.value.trim();
+    const text = commentText.value.trim();
+    if (!text) return;
+    vscode.postMessage({
+      type: "addComment",
+      folder: folderUri,
+      slug: ticket.slug,
+      author: author || "User",
+      text,
+    });
+    closeModal();
+  });
+  commentForm.appendChild(addCommentBtn);
+  modal.appendChild(commentForm);
+
   // Footer
   const footer = el("div", "modal-footer");
 
@@ -679,6 +748,7 @@ function openTicketModal(ticket, folderUri, allColumns) {
       order: ticket.order,
       created: ticket.created,
       tags: newTags,
+      comments: ticket.comments || [],
       body: descArea.value,
     });
     closeModal();
