@@ -219,10 +219,26 @@ body {
   cursor: grabbing;
 }
 
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
 .card-title {
+  flex: 1;
   font-size: 13px;
   line-height: 1.4;
+  min-width: 0;
+  overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+.card-controls {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 4px;
 }
 
 .card-meta {
@@ -251,8 +267,9 @@ body {
   font-family: var(--vscode-font-family);
   font-size: 10px;
   font-weight: 600;
+  height: 22px;
   line-height: 1;
-  min-width: 22px;
+  min-width: 30px;
   opacity: 0.7;
   padding: 3px 5px;
 }
@@ -266,6 +283,18 @@ body {
 .card-id-copy.copied {
   background: var(--vscode-testing-iconPassed, var(--vscode-button-secondaryBackground, rgba(128, 128, 128, 0.18)));
   color: var(--vscode-button-foreground, var(--vscode-foreground));
+  opacity: 1;
+}
+
+.card-delete-btn {
+  height: 22px;
+  min-width: 22px;
+  opacity: 0.7;
+}
+
+.card-delete-btn:hover,
+.card-delete-btn:focus-visible {
+  color: var(--vscode-errorForeground);
   opacity: 1;
 }
 
@@ -283,18 +312,6 @@ body {
   font-size: 10px;
   opacity: 0.5;
   margin-left: auto;
-}
-
-.card-actions {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  display: none;
-  gap: 2px;
-}
-
-.card:hover .card-actions {
-  display: flex;
 }
 
 .card-comment-count {
@@ -601,6 +618,57 @@ button.primary:hover {
 
 .modal-btn.secondary:hover {
   background: var(--vscode-button-secondaryHoverBackground, rgba(128, 128, 128, 0.3));
+}
+
+.modal-btn.danger {
+  background: var(--vscode-button-secondaryBackground, rgba(128, 128, 128, 0.2));
+  color: var(--vscode-errorForeground);
+}
+
+.modal-btn.danger:hover {
+  background: var(--vscode-button-secondaryHoverBackground, rgba(128, 128, 128, 0.3));
+}
+
+/* Confirm dialog */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2001;
+}
+
+.confirm-dialog {
+  background: var(--vscode-editor-background);
+  color: var(--vscode-foreground);
+  border: 1px solid var(--vscode-panel-border, var(--vscode-widget-border, transparent));
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  max-width: 360px;
+  padding: 16px;
+  width: calc(100vw - 48px);
+}
+
+.confirm-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.confirm-message {
+  font-size: 12px;
+  line-height: 1.4;
+  margin-bottom: 16px;
+  opacity: 0.8;
+  overflow-wrap: anywhere;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 /* Modal comments */

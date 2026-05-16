@@ -6,7 +6,10 @@ import { slugify, generateId, toDateString } from "./utils";
 let panelManager: KanbanPanelManager;
 
 export function activate(context: vscode.ExtensionContext): void {
-  panelManager = new KanbanPanelManager(context.extensionUri);
+  panelManager = new KanbanPanelManager(
+    context.extensionUri,
+    String(context.extension.packageJSON.version)
+  );
   context.subscriptions.push(panelManager);
 
   const treeView = vscode.window.createTreeView("yakanban.boardView", {

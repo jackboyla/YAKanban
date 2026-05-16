@@ -56,6 +56,17 @@ source "$HOME/.config/zsh/secrets.zsh"
 npm run publish
 ```
 
+`v0.2.1` was published on 2026-05-16 as a patch release to keep ticket ID and delete controls visible in every card header, replace ticket delete's browser-native confirmation with an in-webview dialog, and version webview assets to avoid stale script/style reuse after extension updates:
+
+```bash
+npm version patch --no-git-tag-version
+npm audit --omit=optional
+npm run build
+npm run package
+source "$HOME/.config/zsh/secrets.zsh"
+npm run publish
+```
+
 Published extension:
 
 ```text

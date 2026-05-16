@@ -23,6 +23,7 @@ _Placeholder: capture durable functional and non-functional requirements here._
 - [x] Add a release guide for initial and future extension releases.
 - [x] Add a small board action for copying a ticket ID.
 - [x] Release `jackboylan.yakanban v0.2.0` as a minor version.
+- [x] Release `jackboylan.yakanban v0.2.1` with visible and reliable board card controls.
 
 ## Outstanding Tasks
 
@@ -44,3 +45,6 @@ _Placeholder: capture durable functional and non-functional requirements here._
 - 2026-05-16: Added a per-ticket `ID` button in the board UI that copies the ticket slug, then verified `webview/main.js` syntax and `npm run build`.
 - 2026-05-16: Began minor release workflow for `jackboylan.yakanban v0.2.0`.
 - 2026-05-16: Published `jackboylan.yakanban v0.2.0`; verified `npm ci`, `npm audit --omit=optional`, `npm run build`, `node --check webview/main.js`, and packaged `yakanban-0.2.0.vsix` with 10 runtime files.
+- 2026-05-16: User reported the ticket ID button does not appear in an existing board after the minor release, new tickets in that board also lack the control, and board-view delete is not usable.
+- 2026-05-16: Prepared `v0.2.1` patch with always-visible card header controls, in-webview ticket delete confirmation, and webview asset versioning.
+- 2026-05-16: Published `jackboylan.yakanban v0.2.1`; verified `npm audit --omit=optional`, `node --check webview/main.js`, `npm run build`, and packaged `yakanban-0.2.1.vsix` with 10 runtime files.

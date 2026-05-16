@@ -2,7 +2,7 @@
   "name": "yakanban",
   "displayName": "YAKanban",
   "description": "Lightweight file-based Kanban board. Tickets stored as markdown files for easy human and AI access.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "jackboylan",
   "license": "MIT",
   "repository": {

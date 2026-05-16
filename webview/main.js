@@ -311,10 +311,27 @@ function renderCard(ticket, folderUri, allColumns) {
     showCardMenu(e, ticket, folderUri, allColumns);
   });
 
-  // Title
+  // Header
+  const header = el("div", "card-header");
   const titleEl = el("span", "card-title");
   titleEl.textContent = ticket.title;
-  card.appendChild(titleEl);
+  header.appendChild(titleEl);
+
+  const controls = el("div", "card-controls");
+  controls.appendChild(createCopyIdButton(ticket.slug));
+
+  const delBtn = iconBtn("×", "Delete ticket");
+  delBtn.classList.add("card-delete-btn");
+  delBtn.addEventListener("mousedown", stopCardInteraction);
+  delBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    deleteTicketFromBoard(ticket, folderUri);
+  });
+  controls.appendChild(delBtn);
+
+  header.appendChild(controls);
+  card.appendChild(header);
 
   // Description preview
   if (ticket.body) {
@@ -326,37 +343,7 @@ function renderCard(ticket, folderUri, allColumns) {
 
   // Meta row
   const meta = el("div", "card-meta");
-  const copyIdBtn = el("button", "card-id-copy");
-  copyIdBtn.type = "button";
-  copyIdBtn.textContent = "ID";
-  copyIdBtn.title = `Copy ticket ID: ${ticket.slug}`;
-  copyIdBtn.addEventListener("mousedown", (e) => {
-    e.stopPropagation();
-  });
-  copyIdBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const defaultTitle = `Copy ticket ID: ${ticket.slug}`;
-    copyToClipboard(ticket.slug).then(() => {
-      copyIdBtn.textContent = "OK";
-      copyIdBtn.title = "Copied ticket ID";
-      copyIdBtn.classList.add("copied");
-      setTimeout(() => {
-        copyIdBtn.textContent = "ID";
-        copyIdBtn.title = defaultTitle;
-        copyIdBtn.classList.remove("copied");
-      }, 1500);
-    }).catch(() => {
-      copyIdBtn.textContent = "Err";
-      copyIdBtn.title = "Copy failed";
-      setTimeout(() => {
-        copyIdBtn.textContent = "ID";
-        copyIdBtn.title = defaultTitle;
-      }, 1500);
-    });
-  });
-  meta.appendChild(copyIdBtn);
-  for (const tag of ticket.tags) {
+  for (const tag of ticket.tags || []) {
     const tagEl = el("span", "card-tag");
     tagEl.textContent = tag;
     meta.appendChild(tagEl);
@@ -372,19 +359,9 @@ function renderCard(ticket, folderUri, allColumns) {
     date.title = ticket.created;
     meta.appendChild(date);
   }
-  card.appendChild(meta);
-
-  // Hover actions
-  const actions = el("div", "card-actions");
-  const delBtn = iconBtn("×", "Delete");
-  delBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (confirm(`Delete "${ticket.title}"?`)) {
-      vscode.postMessage({ type: "deleteTicket", folder: folderUri, slug: ticket.slug });
-    }
-  });
-  actions.appendChild(delBtn);
-  card.appendChild(actions);
+  if (meta.childElementCount > 0) {
+    card.appendChild(meta);
+  }
 
   return card;
 }
@@ -423,7 +400,7 @@ function showCardMenu(e, ticket, folderUri, allColumns) {
   menu.appendChild(sep2);
 
   addMenuItem(menu, "\u{1F5D1} Delete", () => {
-    vscode.postMessage({ type: "deleteTicket", folder: folderUri, slug: ticket.slug });
+    deleteTicketFromBoard(ticket, folderUri);
   }, true);
 
   document.body.appendChild(menu);
@@ -589,6 +566,88 @@ function iconBtn(text, title) {
   btn.textContent = text;
   btn.title = title;
   return btn;
+}
+
+function createCopyIdButton(ticketId) {
+  const copyIdBtn = el("button", "card-id-copy");
+  copyIdBtn.type = "button";
+  copyIdBtn.textContent = "ID";
+  copyIdBtn.title = `Copy ticket ID: ${ticketId}`;
+  copyIdBtn.addEventListener("mousedown", stopCardInteraction);
+  copyIdBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const defaultTitle = `Copy ticket ID: ${ticketId}`;
+    copyToClipboard(ticketId).then(() => {
+      copyIdBtn.textContent = "OK";
+      copyIdBtn.title = "Copied ticket ID";
+      copyIdBtn.classList.add("copied");
+      setTimeout(() => {
+        copyIdBtn.textContent = "ID";
+        copyIdBtn.title = defaultTitle;
+        copyIdBtn.classList.remove("copied");
+      }, 1500);
+    }).catch(() => {
+      copyIdBtn.textContent = "Err";
+      copyIdBtn.title = "Copy failed";
+      setTimeout(() => {
+        copyIdBtn.textContent = "ID";
+        copyIdBtn.title = defaultTitle;
+      }, 1500);
+    });
+  });
+  return copyIdBtn;
+}
+
+function deleteTicketFromBoard(ticket, folderUri, onDeleted) {
+  closeMenus();
+  closeConfirmDialog();
+
+  const overlay = el("div", "confirm-overlay");
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeConfirmDialog();
+  });
+
+  const dialog = el("div", "confirm-dialog");
+
+  const title = el("div", "confirm-title");
+  title.textContent = "Delete ticket?";
+  dialog.appendChild(title);
+
+  const message = el("div", "confirm-message");
+  message.textContent = ticket.title;
+  dialog.appendChild(message);
+
+  const actions = el("div", "confirm-actions");
+
+  const cancelBtn = el("button", "modal-btn secondary");
+  cancelBtn.textContent = "Cancel";
+  cancelBtn.addEventListener("click", closeConfirmDialog);
+  actions.appendChild(cancelBtn);
+
+  const confirmBtn = el("button", "modal-btn danger");
+  confirmBtn.textContent = "Delete";
+  confirmBtn.addEventListener("click", () => {
+    vscode.postMessage({ type: "deleteTicket", folder: folderUri, slug: ticket.slug });
+    closeConfirmDialog();
+    if (onDeleted) {
+      onDeleted();
+    }
+  });
+  actions.appendChild(confirmBtn);
+
+  dialog.appendChild(actions);
+  overlay.appendChild(dialog);
+  document.body.appendChild(overlay);
+  confirmBtn.focus();
+}
+
+function closeConfirmDialog() {
+  document.querySelectorAll(".confirm-overlay").forEach((m) => m.remove());
+}
+
+function stopCardInteraction(e) {
+  e.stopPropagation();
 }
 
 function copyToClipboard(text) {
@@ -777,6 +836,13 @@ function openTicketModal(ticket, folderUri, allColumns) {
     closeModal();
   });
   footer.appendChild(openFileBtn);
+
+  const deleteBtn = el("button", "modal-btn danger");
+  deleteBtn.textContent = "Delete";
+  deleteBtn.addEventListener("click", () => {
+    deleteTicketFromBoard(ticket, folderUri, closeModal);
+  });
+  footer.appendChild(deleteBtn);
 
   const spacer = el("div", "modal-spacer");
   footer.appendChild(spacer);

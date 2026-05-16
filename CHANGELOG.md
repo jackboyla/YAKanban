@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1
+
+- Keep ticket ID copy and delete controls visible in each board card header.
+- Use an in-webview delete confirmation dialog for ticket deletes from cards, context menus, and ticket details.
+- Add webview asset versioning so new panels do not reuse stale scripts or styles after extension updates.
+
 ## 0.2.0
 
 - Add a per-ticket board button for copying the ticket ID/slug for AI-agent references.

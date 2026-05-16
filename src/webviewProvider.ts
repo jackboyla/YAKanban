@@ -29,10 +29,12 @@ export class KanbanPanelManager implements vscode.Disposable {
   private watcher: BoardFileWatcher;
   private disposables: vscode.Disposable[] = [];
   private extensionUri: vscode.Uri;
+  private extensionVersion: string;
   private refreshing = false;
 
-  constructor(extensionUri: vscode.Uri) {
+  constructor(extensionUri: vscode.Uri, extensionVersion: string) {
     this.extensionUri = extensionUri;
+    this.extensionVersion = extensionVersion;
     this.watcher = new BoardFileWatcher(() => this.refresh());
   }
 
@@ -278,12 +280,13 @@ export class KanbanPanelManager implements vscode.Disposable {
   }
 
   private getHtml(webview: vscode.Webview): string {
-    const styleUri = webview.asWebviewUri(
+    const assetVersion = encodeURIComponent(this.extensionVersion);
+    const styleUri = `${webview.asWebviewUri(
       vscode.Uri.joinPath(this.extensionUri, "webview", "styles.css")
-    );
-    const scriptUri = webview.asWebviewUri(
+    )}?v=${assetVersion}`;
+    const scriptUri = `${webview.asWebviewUri(
       vscode.Uri.joinPath(this.extensionUri, "webview", "main.js")
-    );
+    )}?v=${assetVersion}`;
     const nonce = getNonce();
 
     return `<!DOCTYPE html>
