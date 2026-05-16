@@ -241,6 +241,34 @@ body {
   opacity: 0.8;
 }
 
+.card-id-copy {
+  background: var(--vscode-button-secondaryBackground, rgba(128, 128, 128, 0.18));
+  color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-family: var(--vscode-font-family);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  min-width: 22px;
+  opacity: 0.7;
+  padding: 3px 5px;
+}
+
+.card-id-copy:hover,
+.card-id-copy:focus-visible {
+  background: var(--vscode-button-secondaryHoverBackground, rgba(128, 128, 128, 0.28));
+  opacity: 1;
+}
+
+.card-id-copy.copied {
+  background: var(--vscode-testing-iconPassed, var(--vscode-button-secondaryBackground, rgba(128, 128, 128, 0.18)));
+  color: var(--vscode-button-foreground, var(--vscode-foreground));
+  opacity: 1;
+}
+
 .card-description {
   font-size: 11px;
   opacity: 0.55;

@@ -103,8 +103,11 @@ function renderBoard(board, folderUri, repoName) {
   copyBtn.title = "Copy to clipboard for your CLAUDE.md / agents.md";
   copyBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(hintText).then(() => {
+    copyToClipboard(hintText).then(() => {
       copyBtn.textContent = "Copied!";
+      setTimeout(() => { copyBtn.textContent = "Copy"; }, 1500);
+    }).catch(() => {
+      copyBtn.textContent = "Failed";
       setTimeout(() => { copyBtn.textContent = "Copy"; }, 1500);
     });
   });
@@ -323,6 +326,36 @@ function renderCard(ticket, folderUri, allColumns) {
 
   // Meta row
   const meta = el("div", "card-meta");
+  const copyIdBtn = el("button", "card-id-copy");
+  copyIdBtn.type = "button";
+  copyIdBtn.textContent = "ID";
+  copyIdBtn.title = `Copy ticket ID: ${ticket.slug}`;
+  copyIdBtn.addEventListener("mousedown", (e) => {
+    e.stopPropagation();
+  });
+  copyIdBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const defaultTitle = `Copy ticket ID: ${ticket.slug}`;
+    copyToClipboard(ticket.slug).then(() => {
+      copyIdBtn.textContent = "OK";
+      copyIdBtn.title = "Copied ticket ID";
+      copyIdBtn.classList.add("copied");
+      setTimeout(() => {
+        copyIdBtn.textContent = "ID";
+        copyIdBtn.title = defaultTitle;
+        copyIdBtn.classList.remove("copied");
+      }, 1500);
+    }).catch(() => {
+      copyIdBtn.textContent = "Err";
+      copyIdBtn.title = "Copy failed";
+      setTimeout(() => {
+        copyIdBtn.textContent = "ID";
+        copyIdBtn.title = defaultTitle;
+      }, 1500);
+    });
+  });
+  meta.appendChild(copyIdBtn);
   for (const tag of ticket.tags) {
     const tagEl = el("span", "card-tag");
     tagEl.textContent = tag;
@@ -556,6 +589,29 @@ function iconBtn(text, title) {
   btn.textContent = text;
   btn.title = title;
   return btn;
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard?.writeText) {
+    return navigator.clipboard.writeText(text);
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "true");
+  textarea.style.position = "fixed";
+  textarea.style.top = "-1000px";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+
+  const didCopy = document.execCommand("copy");
+  textarea.remove();
+
+  return didCopy
+    ? Promise.resolve()
+    : Promise.reject(new Error("Unable to copy to clipboard"));
 }
 
 function esc(str) {

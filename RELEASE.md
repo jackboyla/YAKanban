@@ -4,13 +4,20 @@ This project currently ships one package: the VS Code extension `jackboylan.yaka
 
 The release artifact is a `.vsix` file produced by `vsce package`, and the public distribution channel is the VS Code Marketplace.
 
+## Packages and Artifacts
+
+| Package | Version source | Build command | Release artifact | Publish command |
+|---------|----------------|---------------|------------------|-----------------|
+| VS Code extension `jackboylan.yakanban` | `package.json` | `npm run build` | `yakanban-<version>.vsix` | `npm run publish` |
+
+When this repo grows additional packages, add each package to this table and extend the manual checklist with that package's build, verification, artifact, and publish steps.
+
 ## Prerequisites
 
 - A Marketplace publisher named `jackboylan`.
 - A valid Azure DevOps token with Marketplace manage permissions.
 - `VSCE_PAT` available in the shell that runs `vsce publish`.
 - Dependencies installed with `npm ci`.
-
 
 Do not print or commit the token.
 
