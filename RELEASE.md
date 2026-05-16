@@ -44,6 +44,18 @@ source "$HOME/.config/zsh/secrets.zsh"
 npm run publish
 ```
 
+`v0.2.0` was published on 2026-05-16 as a minor release adding a board-level copy-ID affordance for ticket references:
+
+```bash
+npm version minor --no-git-tag-version
+npm ci
+npm audit --omit=optional
+npm run build
+npm run package
+source "$HOME/.config/zsh/secrets.zsh"
+npm run publish
+```
+
 Published extension:
 
 ```text
@@ -114,7 +126,7 @@ extension/webview/styles.css
 extension/media/kanban-icon.svg
 ```
 
-It should not include `src/`, `node_modules/`, `progress/`, `package-lock.json`, or source maps.
+It should not include `src/`, `node_modules/`, `.yakanban/`, `progress/`, `package-lock.json`, release playbooks, or source maps.
 
 8. Optionally install the VSIX locally before publishing:
 

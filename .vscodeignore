@@ -3,11 +3,13 @@
 .vscode/**
 .github/**
 .claude/**
+.yakanban/**
 progress/**
 src/**
 node_modules/**
 tsconfig.json
 esbuild.mjs
 package-lock.json
+RELEASE.md
 out/**/*.map
 *.vsix

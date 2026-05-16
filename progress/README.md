@@ -22,6 +22,7 @@ _Placeholder: capture durable functional and non-functional requirements here._
 - [x] Publish the patched extension as `jackboylan.yakanban v0.1.1`.
 - [x] Add a release guide for initial and future extension releases.
 - [x] Add a small board action for copying a ticket ID.
+- [x] Release `jackboylan.yakanban v0.2.0` as a minor version.
 
 ## Outstanding Tasks
 
@@ -41,3 +42,5 @@ _Placeholder: capture durable functional and non-functional requirements here._
 - 2026-05-15: Expanded `RELEASE.md` with an explicit package and artifact table for future package additions.
 - 2026-05-16: Began adding a small board button to copy each ticket's slug/ID for AI-agent references.
 - 2026-05-16: Added a per-ticket `ID` button in the board UI that copies the ticket slug, then verified `webview/main.js` syntax and `npm run build`.
+- 2026-05-16: Began minor release workflow for `jackboylan.yakanban v0.2.0`.
+- 2026-05-16: Published `jackboylan.yakanban v0.2.0`; verified `npm ci`, `npm audit --omit=optional`, `npm run build`, `node --check webview/main.js`, and packaged `yakanban-0.2.0.vsix` with 10 runtime files.
