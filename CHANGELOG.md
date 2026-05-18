@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2
+
+- Keep loading visible tickets when another ticket file has malformed frontmatter.
+- Tolerate common AI-agent ticket titles that use unquoted colons in YAML frontmatter.
+- Add parser regression tests for agent-written ticket files.
+
 ## 0.2.1
 
 - Keep ticket ID copy and delete controls visible in each board card header.

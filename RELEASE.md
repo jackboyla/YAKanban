@@ -67,6 +67,18 @@ source "$HOME/.config/zsh/secrets.zsh"
 npm run publish
 ```
 
+`v0.2.2` was published on 2026-05-18 as a patch release to keep loading tickets when one file has malformed frontmatter, tolerate common AI-agent unquoted-colon title values, and add parser regression tests:
+
+```bash
+npm version patch --no-git-tag-version
+npm audit --omit=optional
+npm run test
+npm run build
+npm run package
+source "$HOME/.config/zsh/secrets.zsh"
+npm run publish
+```
+
 Published extension:
 
 ```text
