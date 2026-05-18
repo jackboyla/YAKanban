@@ -24,6 +24,8 @@ _Placeholder: capture durable functional and non-functional requirements here._
 - [x] Add a small board action for copying a ticket ID.
 - [x] Release `jackboylan.yakanban v0.2.0` as a minor version.
 - [x] Release `jackboylan.yakanban v0.2.1` with visible and reliable board card controls.
+- [x] Fix multi-root controls so add-ticket/add-column/rename and drag/drop actions target the clicked repo section.
+- [x] Release `jackboylan.yakanban v0.2.3` with the multi-root routing fix.
 
 ## Outstanding Tasks
 
@@ -48,3 +50,5 @@ _Placeholder: capture durable functional and non-functional requirements here._
 - 2026-05-16: User reported the ticket ID button does not appear in an existing board after the minor release, new tickets in that board also lack the control, and board-view delete is not usable.
 - 2026-05-16: Prepared `v0.2.1` patch with always-visible card header controls, in-webview ticket delete confirmation, and webview asset versioning.
 - 2026-05-16: Published `jackboylan.yakanban v0.2.1`; verified `npm audit --omit=optional`, `node --check webview/main.js`, `npm run build`, and packaged `yakanban-0.2.1.vsix` with 10 runtime files.
+- 2026-05-18: User reported that clicking `+` in the multi-repo board always added tickets to the first repo. Fixed shared-column-ID DOM lookups by scoping inline prompt targets to `folderUri`, blocked cross-repo drag/drop side effects, hardened webview message folder resolution so missing folders do not fall back to the first repo in multi-root workspaces, and added regression tests for add-ticket/add-column routing.
+- 2026-05-18: Published `jackboylan.yakanban v0.2.3` to the VS Code Marketplace. Release checks passed: `npm ci`, `npm audit --omit=optional`, `npm run test`, `npm run build`, and `npm run package`; publish output reported `Published jackboylan.yakanban v0.2.3`.

@@ -79,6 +79,19 @@ source "$HOME/.config/zsh/secrets.zsh"
 npm run publish
 ```
 
+`v0.2.3` was published on 2026-05-18 as a patch release to fix multi-root board routing so inline add-ticket/add-column/rename controls and drag/drop actions target the clicked workspace folder instead of the first folder:
+
+```bash
+npm version patch --no-git-tag-version
+npm ci
+npm audit --omit=optional
+npm run test
+npm run build
+npm run package
+source "$HOME/.config/zsh/secrets.zsh"
+npm run publish
+```
+
 Published extension:
 
 ```text

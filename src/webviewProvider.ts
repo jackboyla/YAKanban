@@ -272,11 +272,13 @@ export class KanbanPanelManager implements vscode.Disposable {
   }
 
   private resolveFolder(folderPath: string | undefined): vscode.Uri | null {
+    const folders = vscode.workspace.workspaceFolders ?? [];
     if (!folderPath) {
-      const folders = vscode.workspace.workspaceFolders;
-      return folders?.[0]?.uri ?? null;
+      return folders.length === 1 ? folders[0].uri : null;
     }
-    return vscode.Uri.parse(folderPath);
+    const parsed = vscode.Uri.parse(folderPath);
+    return folders.find((folder) => folder.uri.toString() === parsed.toString())
+      ?.uri ?? null;
   }
 
   private getHtml(webview: vscode.Webview): string {

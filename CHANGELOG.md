@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.3
+
+- Fix multi-root board `+` actions so inline ticket creation targets the clicked repository, not the first repository in the workspace.
+- Scope add-column, rename-column, and drag/drop interactions to the correct workspace folder.
+- Add regression tests for multi-root inline control routing.
+
 ## 0.2.2
 
 - Keep loading visible tickets when another ticket file has malformed frontmatter.

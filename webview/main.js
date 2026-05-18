@@ -90,6 +90,7 @@ function renderRepoSection(repo) {
 
 function renderBoard(board, folderUri, repoName) {
   const container = el("div", "board-container");
+  container.dataset.folder = folderUri;
 
   // Agent hint
   const hint = el("div", "agent-hint");
@@ -125,6 +126,7 @@ function renderBoard(board, folderUri, repoName) {
 
   // Add column button
   const addCol = el("div", "add-column");
+  addCol.dataset.folder = folderUri;
   addCol.textContent = "+ Add Column";
   addCol.addEventListener("click", () => {
     promptAddColumn(folderUri);
@@ -186,6 +188,7 @@ function renderColumn(col, tickets, folderUri, allColumns) {
   // Column reorder drop zone
   column.addEventListener("dragover", (e) => {
     if (!dragColumnId || dragColumnId === col.id) return;
+    if (dragColumnFolder !== folderUri) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
     column.classList.add("column-drag-over");
@@ -199,11 +202,13 @@ function renderColumn(col, tickets, folderUri, allColumns) {
 
   column.addEventListener("drop", (e) => {
     if (!dragColumnId || !dragColumnFolder) return;
+    if (dragColumnFolder !== folderUri) return;
     e.preventDefault();
     e.stopPropagation();
     column.classList.remove("column-drag-over");
 
-    const allCols = [...document.querySelectorAll(".column")];
+    const allCols = [...document.querySelectorAll(".column")]
+      .filter((el) => el.dataset.folder === dragColumnFolder);
     const targetIndex = allCols.indexOf(column);
 
     vscode.postMessage({
@@ -220,6 +225,7 @@ function renderColumn(col, tickets, folderUri, allColumns) {
   // Cards
   const cardsContainer = el("div", "column-cards");
   cardsContainer.dataset.columnId = col.id;
+  cardsContainer.dataset.folder = folderUri;
 
   if (tickets.length === 0) {
     const empty = el("div", "empty-state");
@@ -234,6 +240,7 @@ function renderColumn(col, tickets, folderUri, allColumns) {
   // Card drop zone events (skip when dragging a column)
   cardsContainer.addEventListener("dragover", (e) => {
     if (dragColumnId) return;
+    if (dragFolder && dragFolder !== folderUri) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
     column.classList.add("drag-over");
@@ -250,6 +257,7 @@ function renderColumn(col, tickets, folderUri, allColumns) {
     e.preventDefault();
     column.classList.remove("drag-over");
     if (!dragSlug || !dragFolder) return;
+    if (dragFolder !== folderUri) return;
 
     const cards = [...cardsContainer.querySelectorAll(".card")];
     let newOrder = 0;
@@ -461,7 +469,7 @@ function clampMenuPosition(menu) {
 // ---- Prompts (inline) ----
 
 function promptAddTicket(folderUri, columnId) {
-  const col = document.querySelector(`.column-cards[data-column-id="${columnId}"]`);
+  const col = findColumnCards(folderUri, columnId);
   if (!col) return;
 
   // Remove existing inputs
@@ -493,7 +501,7 @@ function promptAddTicket(folderUri, columnId) {
 }
 
 function promptAddColumn(folderUri) {
-  const addCol = document.querySelector(".add-column");
+  const addCol = findAddColumnButton(folderUri);
   if (!addCol) return;
 
   // Avoid duplicate inputs
@@ -522,7 +530,8 @@ function promptAddColumn(folderUri) {
 }
 
 function promptRenameColumn(folderUri, col) {
-  const header = document.querySelector(`.column[data-column-id="${col.id}"] .column-title`);
+  const column = findColumnElement(folderUri, col.id);
+  const header = column?.querySelector(".column-title");
   if (!header) return;
 
   const input = document.createElement("input");
@@ -559,6 +568,25 @@ function el(tag, className) {
   const e = document.createElement(tag);
   if (className) e.className = className;
   return e;
+}
+
+function findColumnCards(folderUri, columnId) {
+  return [...document.querySelectorAll(".column-cards")]
+    .find((el) =>
+      el.dataset.folder === folderUri && el.dataset.columnId === columnId
+    ) || null;
+}
+
+function findColumnElement(folderUri, columnId) {
+  return [...document.querySelectorAll(".column")]
+    .find((el) =>
+      el.dataset.folder === folderUri && el.dataset.columnId === columnId
+    ) || null;
+}
+
+function findAddColumnButton(folderUri) {
+  return [...document.querySelectorAll(".add-column")]
+    .find((el) => el.dataset.folder === folderUri) || null;
 }
 
 function iconBtn(text, title) {
