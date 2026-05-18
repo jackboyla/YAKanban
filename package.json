@@ -84,6 +84,7 @@
   },
   "scripts": {
     "build": "node esbuild.mjs",
+    "test": "node --test tests/*.test.mjs",
     "watch": "node esbuild.mjs --watch",
     "vscode:prepublish": "npm run build",
     "package": "vsce package",

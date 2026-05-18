@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as yaml from "js-yaml";
 import matter from "gray-matter";
+import { parseTicketFile, type Comment, type Ticket } from "./ticketParser";
 import { slugify, generateId, toDateString } from "./utils";
 
 export interface Column {
@@ -8,23 +9,7 @@ export interface Column {
   name: string;
 }
 
-export interface Comment {
-  author: string;
-  date: string;
-  text: string;
-}
-
-export interface Ticket {
-  slug: string;
-  title: string;
-  column: string;
-  order: number;
-  created: string;
-  modified: string;
-  tags: string[];
-  comments: Comment[];
-  body: string;
-}
+export type { Comment, Ticket } from "./ticketParser";
 
 export interface Board {
   columns: Column[];
@@ -96,22 +81,19 @@ export async function readTickets(folder: vscode.Uri): Promise<Ticket[]> {
     const tickets: Ticket[] = [];
     for (const [name, type] of entries) {
       if (type !== vscode.FileType.File || !name.endsWith(".md")) continue;
-      const uri = vscode.Uri.joinPath(dir, name);
-      const raw = Buffer.from(
-        await vscode.workspace.fs.readFile(uri)
-      ).toString("utf-8");
-      const { data, content } = matter(raw);
-      tickets.push({
-        slug: name.replace(/\.md$/, ""),
-        title: data.title ?? name.replace(/\.md$/, ""),
-        column: data.column ?? "todo",
-        order: typeof data.order === "number" ? data.order : 0,
-        created: data.created ?? "",
-        modified: data.modified ?? data.created ?? "",
-        tags: Array.isArray(data.tags) ? data.tags : [],
-        comments: Array.isArray(data.comments) ? data.comments : [],
-        body: content.trim(),
-      });
+      try {
+        const uri = vscode.Uri.joinPath(dir, name);
+        const raw = Buffer.from(
+          await vscode.workspace.fs.readFile(uri)
+        ).toString("utf-8");
+        tickets.push(parseTicketFile(name, raw));
+      } catch (error) {
+        console.warn(
+          `[YAKanban] Failed to read ticket ${name}: ${
+            error instanceof Error ? error.message : String(error)
+          }`
+        );
+      }
     }
     return tickets.sort((a, b) => a.order - b.order);
   } catch {
