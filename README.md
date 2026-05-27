@@ -15,6 +15,13 @@ Click the **YAKanban icon** in the activity bar — it auto-initializes if no bo
 
 A `.yakanban/` directory is created in your workspace with default columns (To Do, In Progress, Done) and a `tickets/` folder.
 
+You can give an agent the Skill to use Yakanban by adding `SKILL.md` from https://github.com/jackboyla/YAKanban/blob/main/SKILL.md:
+
+```bash
+mkdir -p ~/.agents/skills/yakanban-board
+curl -s https://raw.githubusercontent.com/jackboyla/YAKanban/main/SKILL.md -o ~/.agents/skills/yakanban-board/SKILL.md
+```
+
 ## How It Works
 
 Each workspace folder gets its own board stored as plain files:
